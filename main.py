@@ -30,6 +30,11 @@ WINDOW_HEIGHT = 720
 window = pygame.display.set_mode((WINDOW_WIDTH,WINDOW_HEIGHT))
 pygame.display.set_caption("Randy's game of life")
 
+# gestione telecamera
+cameraPos_x = 0
+cameraPos_y = 0
+cameraSpeed = 20
+
 # Creo la mappa di gioco
 BOARD_WIDTH = 64
 BOARD_HEIGHT = 45
@@ -44,7 +49,8 @@ FPS = 15
 clock = pygame.time.Clock()
 
 # Funzione di rendering
-BACKGROUND_COLOR = (60,60,60) #(rgb)
+BACKGROUND_COLOR = (0,0,0) #(rgb)
+BORDER_COLOR = (255, 0, 0)
 def renderBoard():
     window.fill(BACKGROUND_COLOR)
     for j in range(BOARD_HEIGHT):
@@ -52,7 +58,8 @@ def renderBoard():
             value = board[j][i]
             x = (WINDOW_WIDTH / BOARD_WIDTH) * i
             y = (WINDOW_HEIGHT / BOARD_HEIGHT) * j
-            window.blit(images[value],(x, y))
+            window.blit(images[value],(x + cameraPos_x, y + cameraPos_y))
+    pygame.draw.rect(window, BORDER_COLOR, (0 + cameraPos_x, 0 + cameraPos_y, WINDOW_WIDTH, WINDOW_HEIGHT), 5)
     pygame.display.update()
 
 # Creo una variabile che mi serve per esportare
@@ -233,6 +240,8 @@ def editBoard():
     global mouseRClick_FLAG
     global export_FLAG
     global nExport
+    global cameraPos_x
+    global cameraPos_y
 
     # Se la simulazione e' in corso ferma il processamento
     if isSimulationRunning:
@@ -247,15 +256,19 @@ def editBoard():
         mouseLClick_Flag = True
 
         x,y = pygame.mouse.get_pos()
-        i = x*(BOARD_WIDTH/WINDOW_WIDTH)
-        j = y*(BOARD_HEIGHT/WINDOW_HEIGHT)
 
-        i = floor(i)
-        j = floor(j)
+        if (x-cameraPos_x > WINDOW_WIDTH) or (y-cameraPos_y > WINDOW_HEIGHT) or (x-cameraPos_x < 0) or (y-cameraPos_y < 0):
+            pass
+        else:
+            i = (x-cameraPos_x)*(BOARD_WIDTH/WINDOW_WIDTH)
+            j = (y-cameraPos_y)*(BOARD_HEIGHT/WINDOW_HEIGHT)
 
-        board[j][i] = 1
+            i = floor(i)
+            j = floor(j)
 
-        print("[EDITOR] Placed a life cell.")
+            board[j][i] = 1
+
+            print("[EDITOR] Placed a life cell.")
     
     elif not mouseKeys[0] and mouseLClick_Flag:
         mouseLClick_Flag = False
@@ -278,15 +291,19 @@ def editBoard():
         mouseRClick_FLAG = True
 
         x,y = pygame.mouse.get_pos()
-        i = x*(BOARD_WIDTH/WINDOW_WIDTH)
-        j = y*(BOARD_HEIGHT/WINDOW_HEIGHT)
 
-        i = floor(i)
-        j = floor(j)
+        if (x-cameraPos_x > WINDOW_WIDTH) or (y-cameraPos_y > WINDOW_HEIGHT) or (x-cameraPos_x < 0) or (y-cameraPos_y < 0):
+            pass
+        else:
+            i = (x-cameraPos_x)*(BOARD_WIDTH/WINDOW_WIDTH)
+            j = (y-cameraPos_y)*(BOARD_HEIGHT/WINDOW_HEIGHT)
 
-        board[j][i] = 0
+            i = floor(i)
+            j = floor(j)
 
-        print("[EDITOR] Placed a death cell.")
+            board[j][i] = 0
+
+            print("[EDITOR] Placed a death cell.")
     
     elif not mouseKeys[2] and mouseRClick_FLAG:
         mouseRClick_FLAG = False
@@ -311,6 +328,23 @@ def editBoard():
     elif not keyboardKeys[pygame.K_e] and export_FLAG:
         export_FLAG = False
 
+def cameraMovement():
+    global cameraPos_x
+    global cameraPos_y
+    global cameraSpeed
+
+    keyboardKeys = pygame.key.get_pressed()
+
+    #Muovo la cam con wasd
+    if keyboardKeys[pygame.K_a]:
+        cameraPos_x += cameraSpeed
+    if keyboardKeys[pygame.K_d]:
+        cameraPos_x -= cameraSpeed
+    if keyboardKeys[pygame.K_w]:
+        cameraPos_y += cameraSpeed
+    if keyboardKeys[pygame.K_s]:
+        cameraPos_y -= cameraSpeed
+
 # Funzione eseguita allo start
 def onStartup():
     pass
@@ -330,6 +364,7 @@ while isGameRunning:
     editBoard()
     processBoard()
     renderBoard()
+    cameraMovement()
 
 # Svuoto la memoria occupata dal programma
 pygame.quit()
