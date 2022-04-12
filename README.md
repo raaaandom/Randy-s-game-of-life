@@ -15,3 +15,7 @@ A DIY clone of the Conway's game of life
 `E` = Exports the current board to __ExportedBoards/#.rgol_export__
 
 `Dropping a .rgol_export file in the window` = Loads the dropped board.
+
+`W-A-S-D` = Moves the camera position.
+
+`R` = Resets the camera position.

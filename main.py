@@ -45,7 +45,7 @@ board = [[0 for x in range(BOARD_WIDTH)] for y in range(BOARD_HEIGHT)]
 bufferBoard = [[0 for x in range(BOARD_WIDTH)] for y in range(BOARD_HEIGHT)]
 
 # Definisco gli FPS e creo un clock
-FPS = 15
+FPS = 30
 clock = pygame.time.Clock()
 
 # Funzione di rendering
@@ -344,6 +344,11 @@ def cameraMovement():
         cameraPos_y += cameraSpeed
     if keyboardKeys[pygame.K_s]:
         cameraPos_y -= cameraSpeed
+    
+    #reset della cam
+    if keyboardKeys[pygame.K_r]:
+        cameraPos_x = 0
+        cameraPos_y = 0
 
 # Funzione eseguita allo start
 def onStartup():
